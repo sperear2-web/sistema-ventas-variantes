@@ -48,7 +48,7 @@ function registrarVenta(store, { clienteId, items, codigoDescuento }, calcularDe
     items: detalle.map((d) => ({ productoId: d.prod.id, cantidad: d.cantidad, precio: d.precio })),
     subtotal: round2(subtotal),
     descuento: round2(descuento),
-    total: round2(subtotal - descuento),
+    total: round2(subtotal + descuento),
     fecha: new Date().toISOString()
   };
   store.ventas.push(venta);
