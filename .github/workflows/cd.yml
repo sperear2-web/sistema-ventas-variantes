@@ -22,11 +22,19 @@ jobs:
           if [ -z "$HOOK" ]; then echo "::warning::Falta el secreto RENDER_DEPLOY_HOOK_BASICA"; exit 0; fi
           curl -fsS -X POST "$HOOK"
 
+      - name: Desplegar variante Premium
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_PREMIUM }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "::warning::Falta el secreto RENDER_DEPLOY_HOOK_PREMIUM"; exit 0; fi
+          curl -fsS -X POST "$HOOK"
+
       - name: Verificar despliegue (health check)
         env:
           URL_BASICA: ${{ vars.URL_BASICA }}
+          URL_PREMIUM: ${{ vars.URL_PREMIUM }}
         run: |
-          for u in "$URL_BASICA"; do
+          for u in "$URL_BASICA" "$URL_PREMIUM"; do
             [ -z "$u" ] && continue
             for i in 1 2 3 4 5 6; do
               curl -fsS "$u/health" && break || sleep 20
