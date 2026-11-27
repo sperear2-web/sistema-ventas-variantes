@@ -1,0 +1,12 @@
+{
+  "variant": "premium",
+  "features": {
+    "auth": true,
+    "productos": true,
+    "clientes": true,
+    "ventas": true,
+    "reportes": true,
+    "descuentos": true,
+    "exportacion": true
+  }
+}

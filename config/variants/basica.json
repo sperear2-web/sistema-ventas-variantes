@@ -4,6 +4,9 @@
     "auth": true,
     "productos": true,
     "clientes": true,
-    "ventas": true
+    "ventas": true,
+    "reportes": false,
+    "descuentos": false,
+    "exportacion": false
   }
 }
