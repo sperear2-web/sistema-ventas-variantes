@@ -8,7 +8,10 @@ const FEATURES = {
   auth: { mandatory: true, requires: [], descripcion: 'Inicio de sesión' },
   productos: { mandatory: true, requires: ['auth'], descripcion: 'Gestión de productos' },
   clientes: { mandatory: true, requires: ['auth'], descripcion: 'Gestión de clientes' },
-  ventas: { mandatory: true, requires: ['productos', 'clientes'], descripcion: 'Registro de ventas' }
+  ventas: { mandatory: true, requires: ['productos', 'clientes'], descripcion: 'Registro de ventas' },
+  reportes: { mandatory: false, requires: ['ventas'], descripcion: 'Reportes estadísticos' },
+  descuentos: { mandatory: false, requires: ['ventas'], descripcion: 'Gestión de descuentos' },
+  exportacion: { mandatory: false, requires: ['reportes'], descripcion: 'Exportación de reportes' }
 };
 
 module.exports = { FEATURES };

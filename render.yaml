@@ -8,3 +8,11 @@ services:
     autoDeploy: false        # el despliegue lo dispara el workflow CD (deploy hook)
     envVars:
       - { key: VARIANT, value: basica }
+  - type: web
+    name: ventas-premium
+    runtime: node
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    autoDeploy: false
+    envVars:
+      - { key: VARIANT, value: premium }

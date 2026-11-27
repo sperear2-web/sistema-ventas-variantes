@@ -49,3 +49,39 @@ describe('Núcleo común (ambas variantes)', () => {
   });
 });
 
+describe('Variantes: Básica vs Premium', () => {
+  test('Básica NO expone reportes ni exportación', async () => {
+    const s = await sesion('basica');
+    expect((await request(s.app).get('/api/reportes/resumen').set(s.auth)).status).toBe(404);
+    expect((await request(s.app).get('/api/reportes/exportar').set(s.auth)).status).toBe(404);
+  });
+
+  test('Premium expone reportes y exportación CSV', async () => {
+    const s = await sesion('premium');
+    const { productoId, clienteId } = await datos(s);
+    await request(s.app).post('/api/ventas').set(s.auth).send({ clienteId, items: [{ productoId, cantidad: 1 }] });
+    const r = await request(s.app).get('/api/reportes/resumen').set(s.auth);
+    expect(r.body.cantidadVentas).toBe(1);
+    const csv = await request(s.app).get('/api/reportes/exportar').set(s.auth);
+    expect(csv.text).toMatch(/^id,clienteId/);
+  });
+
+  test('Premium aplica descuentos; Básica ignora el código', async () => {
+    const prem = await sesion('premium');
+    let d = await datos(prem);
+    const vp = await request(prem.app).post('/api/ventas').set(prem.auth).send({ clienteId: d.clienteId, items: [{ productoId: d.productoId, cantidad: 4 }], codigoDescuento: 'PROMO10' });
+    expect(vp.body.descuento).toBe(10);
+    expect(vp.body.total).toBe(90);
+
+    const bas = await sesion('basica');
+    d = await datos(bas);
+    const vb = await request(bas.app).post('/api/ventas').set(bas.auth).send({ clienteId: d.clienteId, items: [{ productoId: d.productoId, cantidad: 4 }], codigoDescuento: 'PROMO10' });
+    expect(vb.body.descuento).toBe(0);
+    expect(vb.body.total).toBe(100);
+  });
+
+  test('/health informa la variante activa', async () => {
+    const app = createApp(loadConfig('premium', {}));
+    expect((await request(app).get('/health')).body.variant).toBe('premium');
+  });
+});
