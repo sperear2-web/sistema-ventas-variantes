@@ -1,0 +1,24 @@
+{
+  "name": "sistema-ventas-variantes",
+  "version": "1.0.0",
+  "description": "Sistema de ventas (núcleo) - Componente Práctico 2 GCS, UNEMI",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "start:basica": "VARIANT=basica node src/server.js",
+    "build": "node scripts/build.js",
+    "validate-config": "node scripts/validate-config.js",
+    "test": "jest --runInBand --coverage"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}
