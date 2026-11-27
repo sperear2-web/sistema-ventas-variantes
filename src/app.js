@@ -10,6 +10,7 @@ const core = require('./services/core');
 function createApp(config) {
   const app = express();
   const store = createStore();
+  const f = config.features;
   app.use(express.json());
 
   const wrap = (fn) => (req, res) => {
@@ -36,7 +37,19 @@ function createApp(config) {
   app.post('/api/clientes', auth, wrap((req, res) => res.status(201).json(core.crearCliente(store, req.body))));
   app.get('/api/ventas', auth, (_req, res) => res.json(store.ventas));
 
-  app.post('/api/ventas', auth, wrap((req, res) => res.status(201).json(core.registrarVenta(store, req.body, null))));
+  let calcularDescuento = null;
+  if (f.descuentos) calcularDescuento = require('./services/descuentos').calcularDescuento;
+  app.post('/api/ventas', auth, wrap((req, res) => res.status(201).json(core.registrarVenta(store, req.body, calcularDescuento))));
+
+  // --- Características opcionales (sólo variante Premium) ---
+  if (f.reportes) {
+    const { resumenVentas } = require('./services/reportes');
+    app.get('/api/reportes/resumen', auth, (_req, res) => res.json(resumenVentas(store)));
+  }
+  if (f.exportacion) {
+    const { ventasACsv } = require('./services/exportacion');
+    app.get('/api/reportes/exportar', auth, (_req, res) => res.type('text/csv').send(ventasACsv(store)));
+  }
 
   return app;
 }
