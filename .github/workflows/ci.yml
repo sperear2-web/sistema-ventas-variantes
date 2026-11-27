@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, 'feature/**', 'fix/**']
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build-test:
+    name: Construir, validar y probar (${{ matrix.variant }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [basica]
+    steps:
+      - name: Obtener código fuente
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Validar configuración de variantes (modelo de características)
+        run: npm run validate-config
+
+      - name: Ejecutar pruebas automatizadas
+        run: npm test
+
+      - name: Construir paquete
+        run: npm run build
+        env:
+          VARIANT: ${{ matrix.variant }}
+
+      - name: Prueba de humo de la variante (${{ matrix.variant }})
+        run: |
+          cd dist && npm install --omit=dev --silent
+          VARIANT=${{ matrix.variant }} PORT=3100 node src/server.js &
+          sleep 3
+          curl -sf http://localhost:3100/health | grep '"variant":"${{ matrix.variant }}"'
+
+      - name: Publicar artefacto descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: sistema-ventas-${{ matrix.variant }}-${{ github.sha }}
+          path: dist/
+          retention-days: 14
+
+      - name: Publicar reporte de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-${{ matrix.variant }}
+          path: coverage/
+          retention-days: 14

@@ -1,0 +1,10 @@
+# Blueprint de Render: UNA base de código, DOS servicios (uno por variante).
+services:
+  - type: web
+    name: ventas-basica
+    runtime: node
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    autoDeploy: false        # el despliegue lo dispara el workflow CD (deploy hook)
+    envVars:
+      - { key: VARIANT, value: basica }
