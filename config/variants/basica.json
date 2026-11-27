@@ -1,0 +1,9 @@
+{
+  "variant": "basica",
+  "features": {
+    "auth": true,
+    "productos": true,
+    "clientes": true,
+    "ventas": true
+  }
+}
