@@ -7,6 +7,7 @@
     "start": "node src/server.js",
     "start:basica": "cross-env VARIANT=basica node src/server.js",
     "start:premium": "cross-env VARIANT=premium node src/server.js",
+    "start:ambas": "node scripts/start-ambas.js",
     "build": "node scripts/build.js",
     "validate-config": "node scripts/validate-config.js",
     "test": "jest --runInBand --coverage"
